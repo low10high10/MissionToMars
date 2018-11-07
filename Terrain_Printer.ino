@@ -13,14 +13,6 @@ void loop() {
 
   pulseX= pulseIn(xIn, HIGH); //reads x Pulse (Sideways Tilt)
   pulseY= pulseIn(yIn, HIGH); //reads y Pulse (Forward & Backward Tilt)
-
-  //Displays Pulse Widths
-  
-  //Serial.print(pulseX); //Tilts Left & Right
-  //Serial.print("\t");
-  //Serial.println(pulseY);
-
-
  
   // Prints 'Flat' if in flat terrain range. 
   if((4920 < pulseX && pulseX< 5000)&& (4960 < pulseY && pulseY< 5000) ){ 
