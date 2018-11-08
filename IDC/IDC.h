@@ -23,7 +23,7 @@ class IDC {
     void setServos(int, int);
     void setAxis(int, int);
     void initialize(int);
-    void lineFollow();
+    void lineFollow(int, int);
     void Recieve();
     void Transmit();
     long rcTime(int);

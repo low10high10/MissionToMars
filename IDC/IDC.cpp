@@ -17,15 +17,16 @@ void IDC::setQTI(int QTI1, int QTI2, int QTI3, int QTI4) {
     
 }
 
-// Takes servos from left to right 
-void IDC::setServos(int left, int right) {
-
-  Servo servoRight;
-  Servo servoLeft;
-  servoRight.attach(right);
-  servoLeft.attach(left); 
-  
-}
+//// Takes servos from left to right 
+//void IDC::setServos(int left, int right) {
+//
+//  Servo servoRight;
+//  Servo servoLeft;
+//  servoRight.attach(right);
+//  servoLeft.attach(left); 
+//  brake();
+//  
+//}
 
 // Sets axes pins x and y
 void IDC::setAxis(int x, int y) {
@@ -48,7 +49,12 @@ void IDC::initialize(int _task) {
 }
 
 
-void IDC::lineFollow() {
+void IDC::lineFollow(int left, int right) {
+
+  Servo servoRight;
+  Servo servoLeft;
+  servoRight.attach(right);
+  servoLeft.attach(left); 
 
   while (1) {
 
@@ -70,7 +76,10 @@ void IDC::lineFollow() {
       if (counter == 5) {
         break;
       }    
-      sense();
+
+      if (counter != 2) {
+        sense();
+      }
 
     }
     else if (left > thresh && middleleft > thresh) {

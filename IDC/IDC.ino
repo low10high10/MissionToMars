@@ -7,10 +7,10 @@ IDC a = IDC();
 void setup() {
   // put your setup code here, to run once:
   a.setQTI(49, 51, 53, 52);
-  a.setServos(12, 11);
+//  a.setServos(12, 11);
   a.setAxis(2, 3);
   a.initialize(5);  
-  a.lineFollow();
+  a.lineFollow(12, 11);
   a.Transmit();
 
 }
