@@ -8,26 +8,6 @@
 IDC::IDC() {
 }
 
-void IDC::setQTI(int QTI1, int QTI2, int QTI3, int QTI4) {
-     
-    int qtiPin1 = QTI1;
-    int qtiPin2 = QTI2;
-    int qtiPin3 = QTI3;
-    int qtiPin4 = QTI4; 
-    
-}
-
-//// Takes servos from left to right 
-//void IDC::setServos(int left, int right) {
-//
-//  Servo servoRight;
-//  Servo servoLeft;
-//  servoRight.attach(right);
-//  servoLeft.attach(left); 
-//  brake();
-//  
-//}
-
 // Sets axes pins x and y
 void IDC::setAxis(int x, int y) {
 
@@ -37,32 +17,25 @@ void IDC::setAxis(int x, int y) {
 }
 
 // Takes task, sets score, and begins serial monitor
-void IDC::initialize(int _task) {
 
-  int score = 1;
-  int task = _task;  
+
+void IDC::lineFollow() {
+
+  Servo servoRight;
+  Servo servoLeft;
+  int score = 1; 
   int counter = 0;
 
   Serial.begin(9600);
   Serial2.begin(9600);
 
-}
-
-
-void IDC::lineFollow(int left, int right) {
-
-  Servo servoRight;
-  Servo servoLeft;
-  servoRight.attach(right);
-  servoLeft.attach(left); 
-
   while (1) {
-
+        
     long thresh = 175;
-    long left = rcTime(qtiPin1);
-    long middleleft = rcTime(qtiPin2);
-    long middleright = rcTime(qtiPin3);
-    long right = rcTime(qtiPin4);
+    long left = rcTime(49);
+    long middleleft = rcTime(51);
+    long middleright = rcTime(53);
+    long right = rcTime(52);
   
     if (left < thresh && middleleft < thresh && middleright < thresh && right < thresh) {
       
@@ -80,6 +53,9 @@ void IDC::lineFollow(int left, int right) {
       if (counter != 2) {
         sense();
       }
+
+    forward();
+    delay(500);
 
     }
     else if (left > thresh && middleleft > thresh) {
@@ -112,48 +88,46 @@ long IDC::rcTime(int pin) {
 }
 
 void IDC::forward() {
+  servoRight.attach(11);
+  servoLeft.attach(12); 
   servoLeft.writeMicroseconds(1550);         // Left wheel counterclockwise
   servoRight.writeMicroseconds(1450);        // Right wheel clockwise
 }
 
 void IDC::backward() { 
+  servoRight.attach(11);
+  servoLeft.attach(12);
   servoLeft.writeMicroseconds(1450);         // Left wheel clockwise
   servoRight.writeMicroseconds(1550);        // Right wheel counterclockwise
 }
 
 void IDC::leftTurn() {
+  servoRight.attach(11);
+  servoLeft.attach(12);
   servoLeft.writeMicroseconds(1500);         // Left wheel counterclockwise
   servoRight.writeMicroseconds(1450);        // Right wheel counterclockwise
 }
 
 void IDC::rightTurn() {
+  servoRight.attach(11);
+  servoLeft.attach(12);
   servoLeft.writeMicroseconds(1550);         // Left wheel counterclockwise
   servoRight.writeMicroseconds(1500);        // Right wheel counterclockwise
 }
 
 void IDC::brake() {
+  servoRight.attach(11);
+  servoLeft.attach(12);
   servoLeft.writeMicroseconds(1500);
   servoRight.writeMicroseconds(1500);
 }
 
 void IDC::sense() {
-  if (task == 1) {
-  }
-  else if (task == 2) {
-  }
-  else if (task == 3) {
-  }
-  else if (task == 4) {
-  }
-  else if (task == 5) {
     forward();
-    delay(500);
+    delay(1500);
     brake();       
     landingSite();      
-    delay(500);
-    forward();
-    delay(500); 
-  }
+    delay(1000); 
 }
 
 // Measures what the robot is on
@@ -181,9 +155,7 @@ void IDC::landingSite(){
     if (score == 1) {
       score = 2;
     }
-    else {
-      score += 2;
-    } 
+    score += 1;
   }
 }
 

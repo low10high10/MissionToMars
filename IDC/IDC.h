@@ -5,25 +5,17 @@
 
 class IDC {
     
-  private:
-    int score;
-    int task;
-    int qtiPin1;
-    int qtiPin2;
-    int qtiPin3;
-    int qtiPin4;    
-    int xIn;
-    int yIn;
+  private: 
     int counter;   
-    Servo servoLeft;
-    Servo servoRight;
    
   public:
-    void setQTI(int, int, int, int);    
-    void setServos(int, int);
+    int xIn;
+    int yIn;
+    int score;
+    void setServos();
     void setAxis(int, int);
     void initialize(int);
-    void lineFollow(int, int);
+    void lineFollow();
     void Recieve();
     void Transmit();
     long rcTime(int);
@@ -34,7 +26,9 @@ class IDC {
     void brake(); 
     void landingSite(); 
     void sense();   
-    IDC();
+    IDC();    
+    Servo servoLeft;
+    Servo servoRight;
 };
   
 
