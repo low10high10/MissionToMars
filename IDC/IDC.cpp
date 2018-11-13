@@ -19,7 +19,7 @@ void IDC::setAxis(int x, int y) {
 // Takes task, sets score, and begins serial monitor
 
 
-void IDC::lineFollow() {
+int IDC::lineFollow() {
 
   Servo servoRight;
   Servo servoLeft;
@@ -51,11 +51,14 @@ void IDC::lineFollow() {
       }    
 
       if (counter != 2) {
-        sense();
+        int add = sense();
+        Serial.println(add);
+        score += add;
+        Serial.println(score);
       }
 
     forward();
-    delay(500);
+    delay(750);
 
     }
     else if (left > thresh && middleleft > thresh) {
@@ -71,6 +74,7 @@ void IDC::lineFollow() {
       rightTurn();
     }
   }
+  return score;
 }
 
 long IDC::rcTime(int pin) {
@@ -122,46 +126,58 @@ void IDC::brake() {
   servoRight.writeMicroseconds(1500);
 }
 
-void IDC::sense() {
+int IDC::sense() {
     forward();
     delay(1500);
-    brake();       
-    landingSite();      
-    delay(1000); 
+    brake();    
+    delay(1000);    
+    int count = landingSite();  
+    Serial.print("I am adding: ");
+    Serial.println(count);    
+
+    return count;
 }
 
 // Measures what the robot is on
-void IDC::landingSite(){
+int IDC::landingSite(){
   //variables read pulse width
-
-  int pulseX = pulseIn(xIn, HIGH); //reads x Pulse (Sideways Tilt)
-  int pulseY = pulseIn(yIn, HIGH); //reads y Pulse (Forward & Backward Tilt)
- 
+  int pulseX = pulseIn(2, HIGH); //reads x Pulse (Sideways Tilt)
+  int pulseY = pulseIn(3, HIGH); //reads y Pulse (Forward & Backward Tilt)
+  int count = 0;
+  Serial.print(pulseX);
+  Serial.print("  ");
+  Serial.println(pulseY);
   // Prints 'Flat' if in flat terrain range. 
-  if((4920 < pulseX && pulseX< 5000)&& (4960 < pulseY && pulseY< 5000) ){ 
+  if((4900 < pulseX && pulseX < 5100)&& (4890 < pulseY && pulseY < 5000) ){ 
     Serial.println("Flat");
   } 
   
   // Prints 'Rocky' if in Rocky terrain range. 
-  else if ((4880 <pulseX ) && (5010<pulseY) || ((4870 <pulseX) && (pulseY<4850)))  {
+  else if ((4860 <pulseX ) && (5010<pulseY) || ((4850 <pulseX) && (pulseY<4850)))  {
     Serial.println("Rocky");
-    score += 1;
+    int count = 1;
   }
 
   // Prints 'Hilly' if in Hilly terrain range. 
-  else if(( pulseX < 4860) && (4960<pulseY && pulseY < 5030)){
+  else if(( pulseX < 4860) && (4870<pulseY && pulseY < 5030)){
     Serial.println("Hilly");
 
     if (score == 1) {
-      score = 2;
+      int count = 2;
     }
-    score += 1;
+    else {
+      int count = 1;
+
+    }
+    return count;
+    Serial.println(score);
   }
 }
 
-void IDC::Transmit() {
+void IDC::Transmit(int a) {
 
-  Serial.println(score);
+  Serial2.println(a);
+  Serial.println(a);
   
 }
 

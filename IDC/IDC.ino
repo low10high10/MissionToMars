@@ -6,8 +6,8 @@ IDC a = IDC();
 
 void setup() {
   a.setAxis(2, 3); 
-  a.lineFollow();
-  a.Transmit();
+  int quality = a.lineFollow();
+  a.Transmit(quality);
 
 }
 
