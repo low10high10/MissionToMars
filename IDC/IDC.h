@@ -24,8 +24,9 @@ class IDC {
     void rightTurn();
     void leftTurn();
     void brake(); 
-    int landingSite(); 
-    int sense();   
+    int landingSite(int); 
+    int sense(int);   
+    int quality;
     IDC();    
     Servo servoLeft;
     Servo servoRight;
