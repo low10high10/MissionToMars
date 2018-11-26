@@ -13,7 +13,6 @@ class IDC {
     int yIn;
     int score;
     void setServos();
-    void setAxis(int, int);
     void initialize(int);
     int lineFollow();
     void Recieve();

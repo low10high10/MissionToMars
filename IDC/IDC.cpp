@@ -8,14 +8,6 @@
 IDC::IDC() {
 }
 
-// Sets axes pins x and y
-void IDC::setAxis(int x, int y) {
-
-  int xIn = x;
-  int yIn = y;
-  
-}
-
 // Takes task, sets score, and begins serial monitor
 
 
@@ -47,16 +39,16 @@ int IDC::lineFollow() {
       brake();
       counter += 1;
       delay(500);
-      if (counter == 5) {
+      if (counter == 5) { // after five hashes youre done!
         break;
       }    
 
-      if (counter == 3) {
+      if (counter == 3) { // course correct for the third hash
         rightTurn();
         delay(100);
       }
 
-      if (counter != 2) {
+      if (counter != 2) { // dont check the second hash... ever
         int add = sense(score);
         Serial.println(add);
         score += add;
@@ -65,7 +57,8 @@ int IDC::lineFollow() {
 
     forward();
     delay(500);
-
+    digitalWrite(6, LOW);
+    digitalWrite(7, LOW);
     }
     else if (left > thresh && middleleft > thresh) {
       leftTurn();
@@ -101,7 +94,7 @@ void IDC::forward() {
   servoRight.attach(11);
   servoLeft.attach(12); 
   servoLeft.writeMicroseconds(1550);         // Left wheel counterclockwise
-  servoRight.writeMicroseconds(1450);        // Right wheel clockwise
+  servoRight.writeMicroseconds(1447);        // Right wheel clockwise
 }
 
 void IDC::backward() { 
@@ -133,8 +126,11 @@ void IDC::brake() {
 }
 
 int IDC::sense(int score) {
-    forward();
-    delay(1500);
+    servoRight.attach(11);
+    servoLeft.attach(12); 
+    servoLeft.writeMicroseconds(1535);         // Left wheel counterclockwise
+    servoRight.writeMicroseconds(1463);
+    delay(2000);
     brake();    
     delay(500);    
     int count = landingSite(score);  
@@ -153,32 +149,41 @@ int IDC::landingSite(int score){
   // Prints 'Flat' if in flat terrain range. 
   if((4875 < pulseX && pulseX < 5100)&& (4800 < pulseY && pulseY < 4950) ){ 
     Serial.println("Flat");
+    pinMode(7, OUTPUT);
+    digitalWrite(7, HIGH);
+    Serial.print(pulseX);
+    Serial.println(pulseY);
   } 
-  
   // Prints 'Rocky' if in Rocky terrain range. 
   else if ((4780 <pulseX ) && (4950<pulseY))  {
-    Serial.println("Rocky");
+    Serial.println("Rocky"); // checks if right side is rocky
     count = 1;
     leftTurn();
     delay(75);
     forward();
     delay(75);
+    Serial.print(pulseX);
+    Serial.println(pulseY);
   }
-
-  else if ((4780 <pulseX) && (pulseY<4850)) {
-    Serial.println("Rocky");
+  else if ((4780 <pulseX) && (pulseY<4800)) {
+    Serial.println("Rocky"); // checks ig left side is rocky
     count = 1;
     rightTurn();
     delay(75);
     forward();
     delay(75);
+    Serial.print(pulseX);
+    Serial.println(pulseY);
   }
-
   // Prints 'Hilly' if in Hilly terrain range. 
-  else if(( pulseX < 4875) && (4870<pulseY && pulseY < 5030)){
-    Serial.println("Hilly");
+  else { //if(( pulseX < 4895) && (4870<pulseY && pulseY < 5030))
+    Serial.println("Hilly"); // is it nothing else? its hilly!!
     Serial.print("Score is: ");
     Serial.println(score);
+    pinMode(6, OUTPUT);
+    digitalWrite(6, HIGH);
+    Serial.print(pulseX);
+    Serial.println(pulseY);
     if (score == 1) {
       count = 2;
     }
@@ -190,14 +195,14 @@ int IDC::landingSite(int score){
   }
     Serial.print("Count is: ");
     Serial.println(count);
-    return count;
+    return count; // what will be added to score
 }
 
 void IDC::Transmit(int quality) {
 
   Serial2.begin(9600);
   Serial2.println(quality);
-  Serial.print("Quality of Terrain: ");
+  Serial.print("Quality of Terrain: "); // send our info
   Serial.println(quality);
   
 }

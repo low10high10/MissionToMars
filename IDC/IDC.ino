@@ -5,13 +5,12 @@
 IDC a = IDC();
 
 void setup() {
-  a.setAxis(2, 3); 
-  int quality = a.lineFollow();
-  a.Transmit(quality);
+  int quality = a.lineFollow(); // goes around the track and does a quality check
+  a.Transmit(quality); // sends the information to the team
 
 }
 
 void loop() {
-  a.Recieve();
+  a.Recieve(); // did anyone send anything?
 
 }
