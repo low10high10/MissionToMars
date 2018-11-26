@@ -8,14 +8,19 @@ class IDC {
   private: 
     int counter;   
    
-  public:
+  public:  
+    String group1;
+    String group2;
+    String group3;
+    String group4;
+    String group5;
     int xIn;
     int yIn;
     int score;
     void setServos();
     void initialize(int);
     int lineFollow();
-    void Recieve();
+    void Recieve(int);
     void Transmit(int);
     long rcTime(int);
     void forward();

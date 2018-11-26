@@ -216,9 +216,102 @@ void IDC::Transmit(int quality) {
   
 }
 
-void IDC::Recieve() {
+
+void IDC::Recieve(int quality) {
+
+  Serial3.begin(9600);
+
+  String group1;
+  String group2;
+  String group3;
+  String group4;
+  String group5;
+
+  group5 = quality;
+  
   if (Serial2.available()) {
-     score += Serial2.read();
+     char data = Serial2.read();
+
+     if (data == "a") {
+        group1 = "1";
+     }
+     else if (data == "b") {
+        group1 = "2";
+     }
+     else if (data == "c") {
+        group1 = "3";
+     }
+     else if (data == "d") {
+        group1 = "4";
+     }
+     else if (data == "e") {
+        group1 = "5";
+     }
+     else if (data == "f") {
+        group2 = "1";
+     }
+     else if (data == "g") {
+        group2 = "2";
+     }
+     else if (data == "h") {
+        group2 = "3";
+     }
+     else if (data == "i") {
+        group2 = "4";
+     }
+     else if (data == "j") {
+        group2 = "5";
+     }
+     else if (data == "k") {
+        group3 = "1";
+     }
+     else if (data == "l") {
+        group3 = "2";
+     }
+     else if (data == "m") {
+        group3 = "3";
+     }
+     else if (data == "n") {
+        group3 = "4";
+     }
+     else if (data == "o") {
+        group3 = "5";
+     }
+     else if (data == "p") {
+        group4 = "1";
+     }
+     else if (data == "q") {
+        group4 = "2";
+     }
+     else if (data == "r") {
+        group4 = "3";
+     }
+     else if (data == "s") {
+        group4 = "4";
+     }
+     else if (data == "t") {
+        group4 = "5";
+     }
+     else if (data == "u") {
+        group5 = "1";
+     }
+     else if (data == "v") {
+        group5 = "2";
+     }
+     else if (data == "w") {
+        group5 = "3";
+     }
+     else if (data == "x") {
+        group5 = "4";
+     }
+     else if (data == "y") {
+        group5 = "5";
+     }
   }
+
+  String Mission = (group1 + " " + group2 + " " + group3 + " " + group4 + " " + group5);
+  Serial3.write(13);
+  Serial3.print(Mission);
+  
 }
 
