@@ -21,6 +21,9 @@ int IDC::lineFollow() {
 
   Serial.begin(9600);
   Serial2.begin(9600);
+  Serial3.begin(9600); // LCD Serial
+  Serial3.write(12); //Clears LCD Serial
+  Serial3.write(17); //Turns backlight on
 
   while (1) {
         
@@ -149,6 +152,7 @@ int IDC::landingSite(int score){
   // Prints 'Flat' if in flat terrain range. 
   if((4875 < pulseX && pulseX < 5100)&& (4800 < pulseY && pulseY < 4950) ){ 
     Serial.println("Flat");
+    Serial3.print("F "); //prints onto LCD Display
     pinMode(7, OUTPUT);
     digitalWrite(7, HIGH);
     Serial.print(pulseX);
@@ -157,6 +161,7 @@ int IDC::landingSite(int score){
   // Prints 'Rocky' if in Rocky terrain range. 
   else if ((4780 <pulseX ) && (4950<pulseY))  {
     Serial.println("Rocky"); // checks if right side is rocky
+    Serial3.print("R "); //prints onto LCD Display
     count = 1;
     leftTurn();
     delay(75);
@@ -167,6 +172,7 @@ int IDC::landingSite(int score){
   }
   else if ((4780 <pulseX) && (pulseY<4800)) {
     Serial.println("Rocky"); // checks ig left side is rocky
+    Serial3.print("R "); //prints onto LCD Display
     count = 1;
     rightTurn();
     delay(75);
@@ -178,6 +184,7 @@ int IDC::landingSite(int score){
   // Prints 'Hilly' if in Hilly terrain range. 
   else { //if(( pulseX < 4895) && (4870<pulseY && pulseY < 5030))
     Serial.println("Hilly"); // is it nothing else? its hilly!!
+    Serial3.print("H "); //prints onto LCD Display
     Serial.print("Score is: ");
     Serial.println(score);
     pinMode(6, OUTPUT);
@@ -204,6 +211,8 @@ void IDC::Transmit(int quality) {
   Serial2.println(quality);
   Serial.print("Quality of Terrain: "); // send our info
   Serial.println(quality);
+  Serial3.write(13);
+  Serial3.println(quality);
   
 }
 
