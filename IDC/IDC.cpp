@@ -25,6 +25,8 @@ int IDC::lineFollow() {
   Serial3.write(12); //Clears LCD Serial
   Serial3.write(17); //Turns backlight on
 
+  score += sense(score);
+
   while (1) {
         
     long thresh = 175;
@@ -48,7 +50,7 @@ int IDC::lineFollow() {
 
       if (counter == 3) { // course correct for the third hash
         rightTurn();
-        delay(100);
+        delay(150);
       }
 
       if (counter != 2) { // dont check the second hash... ever
@@ -96,8 +98,8 @@ long IDC::rcTime(int pin) {
 void IDC::forward() {
   servoRight.attach(11);
   servoLeft.attach(12); 
-  servoLeft.writeMicroseconds(1550);         // Left wheel counterclockwise
-  servoRight.writeMicroseconds(1447);        // Right wheel clockwise
+  servoLeft.writeMicroseconds(1542.66);         // Left wheel counterclockwise
+  servoRight.writeMicroseconds(1450);        // Right wheel clockwise
 }
 
 void IDC::backward() { 
@@ -129,11 +131,8 @@ void IDC::brake() {
 }
 
 int IDC::sense(int score) {
-    servoRight.attach(11);
-    servoLeft.attach(12); 
-    servoLeft.writeMicroseconds(1535);         // Left wheel counterclockwise
-    servoRight.writeMicroseconds(1463);
-    delay(2000);
+    forward();
+    delay(1500);
     brake();    
     delay(500);    
     int count = landingSite(score);  
@@ -164,9 +163,9 @@ int IDC::landingSite(int score){
     Serial3.print("R "); //prints onto LCD Display
     count = 1;
     leftTurn();
-    delay(75);
+    //delay(100);
     forward();
-    delay(75);
+    delay(750);
     Serial.print(pulseX);
     Serial.println(pulseY);
   }
@@ -175,9 +174,9 @@ int IDC::landingSite(int score){
     Serial3.print("R "); //prints onto LCD Display
     count = 1;
     rightTurn();
-    delay(75);
+    //delay(100);
     forward();
-    delay(75);
+    delay(750);
     Serial.print(pulseX);
     Serial.println(pulseY);
   }
@@ -198,7 +197,7 @@ int IDC::landingSite(int score){
       count = 1;
     }
     forward();
-    delay(500);
+    delay(1000);
   }
     Serial.print("Count is: ");
     Serial.println(count);
@@ -207,111 +206,135 @@ int IDC::landingSite(int score){
 
 void IDC::Transmit(int quality) {
 
-  Serial2.begin(9600);
-  Serial2.println(quality);
-  Serial.print("Quality of Terrain: "); // send our info
-  Serial.println(quality);
-  Serial3.write(13);
-  Serial3.println(quality);
   
 }
 
 
 void IDC::Recieve(int quality) {
 
-  Serial3.begin(9600);
+  
+  Serial2.begin(9600);
+  Serial.print("Quality of Terrain: "); // send our info
+  Serial.println(quality);
+  Serial3.write(13);
+  Serial3.println(quality);
 
-  String group1;
-  String group2;
-  String group3;
-  String group4;
-  String group5;
+  delay(1000);
 
-  group5 = quality;
+  char transmit;
+  
+ if (quality == 1) {
+   transmit = 'u';
+ }
+ else if (quality == 2) {
+   transmit = 'v';
+ }
+ else if (quality == 3) {
+   transmit = 'w';
+ }
+ else if (quality == 4) {
+   transmit = 'x';
+ }
+ else if (quality == 5) {
+   transmit = 'y';
+ }
+ String group5 = String(quality);
+ String group1 = "0";
+ String group2 = "0";
+ String group3 = "0";
+ String group4 = "0";
+
+ while(1) {
   
   if (Serial2.available()) {
      char data = Serial2.read();
-
-     if (data == "a") {
+     Serial.print("Found:");
+     Serial.println(data);
+     
+     if (data == 'a') {
         group1 = "1";
      }
-     else if (data == "b") {
+     else if (data == 'b') {
         group1 = "2";
+        Serial.println("Hey, that's pretty good");
+        Serial.println(group1);
      }
-     else if (data == "c") {
-        group1 = "3";
+     else if (data == 'c') {
+         group1 = "3";
      }
-     else if (data == "d") {
-        group1 = "4";
+     else if (data == 'd') {
+         group1 = "4";
      }
-     else if (data == "e") {
-        group1 = "5";
+     else if (data == 'e') {
+         group1 = "5";
      }
-     else if (data == "f") {
-        group2 = "1";
+     else if (data == 'f') {
+         group2 = "1";
      }
-     else if (data == "g") {
-        group2 = "2";
+     else if (data == 'g') {
+         group2 = "2";
      }
-     else if (data == "h") {
-        group2 = "3";
+     else if (data == 'h') {
+         group2 = "3";
      }
-     else if (data == "i") {
-        group2 = "4";
+     else if (data == 'i') {
+         group2 = "4";
      }
-     else if (data == "j") {
-        group2 = "5";
+     else if (data == 'j') {
+         group2 = "5";
      }
-     else if (data == "k") {
-        group3 = "1";
+     else if (data == 'k') {
+         group3 = "1";
      }
-     else if (data == "l") {
-        group3 = "2";
+     else if (data == 'l') {
+         group3 = "2";
      }
-     else if (data == "m") {
-        group3 = "3";
+     else if (data == 'm') {
+         group3 = "3";
      }
-     else if (data == "n") {
-        group3 = "4";
+     else if (data == 'n') {
+         group3 = "4";
      }
-     else if (data == "o") {
-        group3 = "5";
+     else if (data == 'o') {
+         group3 = "5";
      }
-     else if (data == "p") {
-        group4 = "1";
+     else if (data == 'p') {
+         group4 = "1";
      }
-     else if (data == "q") {
-        group4 = "2";
+     else if (data == 'q') {
+         group4 = "2";
      }
-     else if (data == "r") {
-        group4 = "3";
+     else if (data == 'r') {
+         group4 = "3";
      }
-     else if (data == "s") {
-        group4 = "4";
+     else if (data == 's') {
+         group4 = "4";
      }
-     else if (data == "t") {
-        group4 = "5";
+     else if (data == 't') {
+         group4 = "5";
      }
-     else if (data == "u") {
-        group5 = "1";
+     else if (data == 'u') {
+         group5 = "1";
      }
-     else if (data == "v") {
-        group5 = "2";
+     else if (data == 'v') {
+         group5 = "2";
      }
-     else if (data == "w") {
-        group5 = "3";
+     else if (data == 'w') {
+         group5 = "3";
      }
-     else if (data == "x") {
-        group5 = "4";
+     else if (data == 'x') {
+         group5 = "4";
      }
-     else if (data == "y") {
-        group5 = "5";
+     else if (data == 'y') {
+         group5 = "5";
      }
   }
 
   String Mission = (group1 + " " + group2 + " " + group3 + " " + group4 + " " + group5);
-  Serial3.write(13);
+  Serial3.write(12);
   Serial3.print(Mission);
-  
+  Serial2.print(transmit);
+  delay(3000);
+ }
 }
 

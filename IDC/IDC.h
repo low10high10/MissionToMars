@@ -14,6 +14,7 @@ class IDC {
     String group3;
     String group4;
     String group5;
+    String data;
     int xIn;
     int yIn;
     int score;
