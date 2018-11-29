@@ -78,6 +78,8 @@ int IDC::lineFollow() {
       rightTurn();
     }
   }
+  servoLeft.detach();
+  servoRight.detach();
   return score;
 }
 
@@ -149,7 +151,7 @@ int IDC::landingSite(int score){
   Serial.print("  ");
   Serial.println(pulseY);
   // Prints 'Flat' if in flat terrain range. 
-  if((4875 < pulseX && pulseX < 5100)&& (4800 < pulseY && pulseY < 4950) ){ 
+  if((4850 < pulseX && pulseX < 5100)&& (4800 < pulseY && pulseY < 4950) ){ 
     Serial.println("Flat");
     Serial3.print("F "); //prints onto LCD Display
     pinMode(7, OUTPUT);
@@ -329,7 +331,7 @@ void IDC::Recieve(int quality) {
          group5 = "5";
      }
   }
-
+  // Gathering the data from the other teams and combining it into one string.
   String Mission = (group1 + " " + group2 + " " + group3 + " " + group4 + " " + group5);
   Serial3.write(12);
   Serial3.print(Mission);
