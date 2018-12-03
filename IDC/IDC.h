@@ -22,15 +22,14 @@ class IDC {
     void initialize(int);
     int lineFollow();
     void Recieve(int);
-    void Transmit(int);
     long rcTime(int);
     void forward();
     void backward();
     void rightTurn();
     void leftTurn();
     void brake(); 
-    int landingSite(int); 
-    int sense(int);   
+    int landingSite(int, int, int, int, int); 
+    int sense(int, int, int, int, int);   
     int quality;
     IDC();    
     Servo servoLeft;
