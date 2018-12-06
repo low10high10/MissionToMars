@@ -13,19 +13,26 @@ IDC::IDC() {
 
 int IDC::lineFollow() {
 
+  int weighty = 100;
+  int weightx = 100;
+
   int score = 1; 
   
   Serial.begin(9600);
   Serial2.begin(9600);
-  Serial3.begin(9600); // LCD Serial
+  //Serial3.begin(9600); // LCD Serial
+//  Serial3.end(9600);
   Serial3.write(12); //Clears LCD Serial
-  Serial3.write(17); //Turns backlight on
-  int UpperFlatY = pulseIn(3, HIGH) + 100; //reads y Pulse (Sideways Tilt)
-  int LowerFlatY = pulseIn(3, HIGH) - 100; //reads y Pulse (Forward & Backward Tilt)
-  int UpperFlatX = pulseIn(2, HIGH) + 100; //reads x Pulse (Sideways Tilt)
-  int LowerFlatX = pulseIn(2, HIGH) - 100; //reads x Pulse (Forward & Backward Tilt)
-  Serial3.print(String(pulseIn(3, HIGH)) + " "+ String(pulseIn(2, HIGH)));
-  delay(2000);
+  //Serial3.write(17); //Turns backlight on
+  
+  int threshY = pulseIn(3, HIGH);
+  int threshX = pulseIn(2, HIGH);
+  int UpperFlatY = threshY + weighty; //reads y Pulse (Sideways Tilt)
+  int LowerFlatY = threshY - weighty; //reads y Pulse (Forward & Backward Tilt)
+  int UpperFlatX = threshX + weightx; //reads x Pulse (Sideways Tilt)
+  int LowerFlatX = threshX - weightx; //reads x Pulse (Forward & Backward Tilt)
+  Serial3.print(String(threshY) + " "+ String(threshX));
+  delay(1000);
 
   Servo servoRight;
   Servo servoLeft;
@@ -50,10 +57,13 @@ int IDC::lineFollow() {
     else if (left > thresh && middleleft > thresh && middleright > thresh && right > thresh ){
       brake();    
       delay(1000);
-      UpperFlatY = pulseIn(3, HIGH) + 100; //reads y Pulse (Sideways Tilt)
-      LowerFlatY = pulseIn(3, HIGH) - 100; //reads y Pulse (Forward & Backward Tilt)
-      UpperFlatX = pulseIn(2, HIGH) + 100; //reads x Pulse (Sideways Tilt)
-      LowerFlatX = pulseIn(2, HIGH) - 100; //reads x Pulse (Forward & Backward Tilt)
+      threshY = pulseIn(3, HIGH);
+      threshX = pulseIn(2, HIGH);
+      UpperFlatY = threshY + weighty; //reads y Pulse (Sideways Tilt)
+      LowerFlatY = threshY - weighty; //reads y Pulse (Forward & Backward Tilt)
+      UpperFlatX = threshX + weightx; //reads x Pulse (Sideways Tilt)
+      LowerFlatX = threshX - weightx; //reads x Pulse (Forward & Backward Tilt)
+      Serial3.print(String(threshY) + " "+ String(threshX));
       delay(500);
       counter += 1;
   
@@ -62,8 +72,9 @@ int IDC::lineFollow() {
       }    
 
       if (counter == 3) { // course correct for the third hash
+        delay(500);
         rightTurn();
-        delay(125);
+        delay(100);
       }
 
       if (counter != 2 && counter != 4) { // dont check the second hash... ever
@@ -143,6 +154,8 @@ void IDC::brake() {
   servoLeft.attach(12);
   servoLeft.writeMicroseconds(1500);
   servoRight.writeMicroseconds(1500);
+  servoRight.detach();
+  servoLeft.detach();
 }
 
 int IDC::sense(int score, int UpperFlatY, int LowerFlatY, int UpperFlatX, int LowerFlatX) {
@@ -150,29 +163,48 @@ int IDC::sense(int score, int UpperFlatY, int LowerFlatY, int UpperFlatX, int Lo
     delay(1500);
     brake();    
     delay(1500);    
-    int count = landingSite(score, UpperFlatY, LowerFlatY, UpperFlatX, LowerFlatX);  
-    return count;
+    int add = landingSite(score, UpperFlatY, LowerFlatY, UpperFlatX, LowerFlatX);  
+    return add;
 }
 
 // Measures what the robot is on
 int IDC::landingSite(int score, int UpperFlatY, int LowerFlatY, int UpperFlatX, int LowerFlatX){
   //variables read pulse width
-  int pulseX = pulseIn(2, HIGH); //reads x Pulse (Sideways Tilt)
-  int pulseY = pulseIn(3, HIGH); //reads y Pulse (Forward & Backward Tilt)
+
+  delay(500);
+  
+  int pulseX = pulseIn(2, HIGH); //reads x Pulse (Forward & Backward Tilt)
+  int pulseY = pulseIn(3, HIGH); //reads y Pulse (Sideways Tilt)
+
+  delay(100);
+  pulseX+= pulseIn(2, HIGH);
+  pulseY+= pulseIn(3, HIGH);
+
+  delay(100);
+  pulseX+= pulseIn(2, HIGH);
+  pulseY+= pulseIn(3, HIGH);
+
+  pulseX=pulseX/3;
+  pulseY=pulseY/3;
   int count = 0;
+  pinMode(6,OUTPUT);
+  pinMode(7, OUTPUT);
+  
+  delay(500);
+  
   // Prints 'Flat' if in flat terrain range. 
   Serial3.write(12);
   
-  if((LowerFlatY < pulseX && pulseX < UpperFlatY) && (LowerFlatY < pulseY && pulseY < UpperFlatY) ){ 
+  if((LowerFlatX < pulseX && pulseX < UpperFlatX) && (LowerFlatY < pulseY && pulseY < UpperFlatY) ){ 
     Serial.println("Flat");
     Serial3.print("F "); //prints onto LCD Display
-    delay(1000);
+//    delay(1000);
     Serial3.write(12);
     Serial3.println(String(UpperFlatY) + " " + String(LowerFlatY) + " " + String(pulseY));
     Serial3.write(13);
     Serial3.println(String(UpperFlatX) + " " + String(LowerFlatX) + " " + String(pulseX));
-    delay(3000);
-    pinMode(7, OUTPUT);
+//    delay(3000);
+
     digitalWrite(7, HIGH);
     Serial.print(pulseX);
     Serial.println(pulseY);
@@ -181,12 +213,14 @@ int IDC::landingSite(int score, int UpperFlatY, int LowerFlatY, int UpperFlatX, 
   else if (UpperFlatY<pulseY)  {
     Serial.println("Rocky"); // checks if right side is rocky
     Serial3.print("R "); //prints onto LCD Display
-    delay(1000);
+//    delay(1000);
     Serial3.write(12);
     Serial3.println(String(UpperFlatY) + " " + String(LowerFlatY) + " " + String(pulseY));
     Serial3.write(13);
     Serial3.println(String(UpperFlatX) + " " + String(LowerFlatX) + " " + String(pulseX));
-    delay(3000);
+    digitalWrite(6,LOW);
+    digitalWrite(7,LOW);
+//    delay(3000);
     count = 1;
     leftTurn();
     //delay(100);
@@ -198,12 +232,14 @@ int IDC::landingSite(int score, int UpperFlatY, int LowerFlatY, int UpperFlatX, 
   else if (pulseY<LowerFlatY) {
     Serial.println("Rocky"); // checks if left side is rocky
     Serial3.print("R "); //prints onto LCD Display
-    delay(1000);
+//    delay(1000);
     Serial3.write(12);
     Serial3.println(String(UpperFlatY) + " " + String(LowerFlatY) + " " + String(pulseY));
     Serial3.write(13);
     Serial3.println(String(UpperFlatX) + " " + String(LowerFlatX) + " " + String(pulseX));
-    delay(3000);
+//    delay(3000);
+    digitalWrite(6,LOW);
+    digitalWrite(7,LOW);
     count = 1;
     rightTurn();
     //delay(100);
@@ -216,15 +252,14 @@ int IDC::landingSite(int score, int UpperFlatY, int LowerFlatY, int UpperFlatX, 
   else { //if(( pulseX < 4895) && (4870<pulseY && pulseY < 5030))
     Serial.println("Hilly"); // is it nothing else? its hilly!!
     Serial3.print("H "); //prints onto LCD Display
-    delay(1000);
+//    delay(1000);
     Serial3.write(12);
     Serial3.println(String(UpperFlatY) + " " + String(LowerFlatY) + " " + String(pulseY));
     Serial3.write(13);
     Serial3.println(String(UpperFlatX) + " " + String(LowerFlatX) + " " + String(pulseX));
-    delay(3000);
+//    delay(3000);
     Serial.print("Score is: ");
     Serial.println(score);
-    pinMode(6, OUTPUT);
     digitalWrite(6, HIGH);
     Serial.print(pulseX);
     Serial.println(pulseY);
@@ -236,6 +271,8 @@ int IDC::landingSite(int score, int UpperFlatY, int LowerFlatY, int UpperFlatX, 
     }
     forward();
     delay(1000);
+    digitalWrite(6,LOW);
+    digitalWrite(7,LOW);
   }
   return count; // what will be added to score
 }
@@ -274,6 +311,9 @@ void IDC::Recieve(int quality) {
  String group3 = "0";
  String group4 = "0";
 
+
+Serial2.print(transmit);
+
  while(1) {
   // Send and recieve data
   if (Serial2.available()) {
@@ -286,8 +326,6 @@ void IDC::Recieve(int quality) {
      }
      else if (data == 'b') {
         group1 = "2";
-        Serial.println("Hey, that's pretty good");
-        Serial.println(group1);
      }
      else if (data == 'c') {
          group1 = "3";
@@ -343,28 +381,29 @@ void IDC::Recieve(int quality) {
      else if (data == 't') {
          group4 = "5";
      }
-     else if (data == 'u') {
-         group5 = "1";
-     }
-     else if (data == 'v') {
-         group5 = "2";
-     }
-     else if (data == 'w') {
-         group5 = "3";
-     }
-     else if (data == 'x') {
-         group5 = "4";
-     }
-     else if (data == 'y') {
-         group5 = "5";
-     }
+//     else if (data == 'u') {
+//         group5 = "1";
+//     }
+//     else if (data == 'v') {
+//         group5 = "2";
+//     }
+//     else if (data == 'w') {
+//         group5 = "3";
+//     }
+//      else if (data == 'x') {
+//         group5 = "4";
+//     }
+//     else if (data == 'y') {
+//         group5 = "5";
+//     }
   }
   // Gathering the data from the other teams and combining it into one string.
-  String Mission = (group1 + " " + group2 + " " + group3 + " " + group4 + " " + group5);
+  Serial3.begin(9600);
   Serial3.write(12);
+  String Mission = (group1 + " " + group2 + " " + group3 + " " + group4 + " " + group5);
+  Serial3.print(Mission);
+  Serial3.write(13);
   Serial3.print(group5);
-  Serial2.print(transmit);
-  delay(3000);
+  delay(500);
  }
 }
-

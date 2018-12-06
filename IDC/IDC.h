@@ -9,6 +9,8 @@ class IDC {
     int counter;   
    
   public:  
+    int threshY;
+    int threshX;
     String group1;
     String group2;
     String group3;
